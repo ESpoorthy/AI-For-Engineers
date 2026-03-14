@@ -2,11 +2,11 @@
 
 AI for Engineers is an intelligent, MLOps-powered learning assistant built for engineering students and recent graduates. The system is designed to collect real engineering questions, build and version datasets, train specialized models, and deliver step-by-step solutions presented in a clear, faculty-like manner.
 
-## 🎯 The Challenge: Rote Memorization
+##  The Challenge: Rote Memorization
 
 Engineering mathematics demands profound foundational knowledge and conceptual clarity. Current AI tools frequently function as mere high-powered calculators, offering final answers devoid of context. This approach incentivizes rote memorization and restricts the development of genuine problem-solving capabilities.
 
-## 💡 Our Solution: Conceptual Mastery
+##  Our Solution: Conceptual Mastery
 
 Our intelligent learning assistant serves as a **virtual lecturer** that:
 - Deconstructs complex mathematical problems into manageable stages
@@ -14,7 +14,7 @@ Our intelligent learning assistant serves as a **virtual lecturer** that:
 - Prioritizes methodology over the final output
 - Actively cultivates rigorous analytical skills essential for real-world engineering
 
-## 🌟 Key Features
+##  Key Features
 
 ### 1. Virtual Lecturer
 Delivers robust, step-by-step guidance that mirrors traditional university teaching, clearly explaining the rationale behind every mathematical operation.
@@ -46,7 +46,7 @@ Track model behavior and performance drift.
 ### 10. Continuous Retraining
 Incorporates user feedback and new data to improve answers over time.
 
-## 🏗️ Technical Architecture
+##  Technical Architecture
 
 ### Core AI Engine
 Powered by advanced Large Language Models (LLMs) and bespoke prompt engineering to strictly process mathematical reasoning and generate step-by-step logic.
@@ -57,7 +57,7 @@ Built upon Python and FastAPI for swift data routing, utilizing robust databases
 ### User Interface
 A responsive front-end framework designed for clear, distraction-free studying, seamlessly integrated with MathJax and KaTeX for crisp equation rendering.
 
-## 📊 Competitive Advantage
+##  Competitive Advantage
 
 | Feature | Conventional Solvers | Generic LLM Chatbots | AI for Engineers |
 |---------|---------------------|---------------------|------------------|
@@ -66,11 +66,11 @@ A responsive front-end framework designed for clear, distraction-free studying, 
 | Adaptive Revision & Flashcards | ✗ No | ✗ No | ✓ Core Feature |
 | Multi-Profile Skill Analytics | ✗ No | ✗ No | ✓ Integrated Dashboard |
 
-## 📈 Impact on Conceptual Confidence
+## Impact on Conceptual Confidence
 
 Continuous engagement with the Virtual Lecturer correlates with a steady increase in problem-solving confidence, virtually eliminating reliance on rote memorization over a typical academic term.
 
-## 🚀 Development Roadmap
+##  Development Roadmap
 
 ### Phase 1 - Engine
 Deployment of the core AI mathematics engine, ensuring mathematically sound, step-by-step logic.
@@ -84,7 +84,7 @@ Integration of dynamic flashcards and personalized, spaced-repetition quizzes.
 ### Phase 4 - Scaling
 Introduction of institutional multi-profile support, educator dashboards, and the full public release.
 
-## 🛠️ Architecture
+##  Architecture
 
 **Frontend**: HTML, CSS and React for the demo interface  
 **Backend**: Flask or FastAPI serving the model and handling requests  
@@ -93,7 +93,7 @@ Introduction of institutional multi-profile support, educator dashboards, and th
 **DevOps**: Docker for containerization and GitHub Actions for CI  
 **Deployment**: Cloud or local server depending on requirements and budget
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 AI-For-Engineers/
@@ -135,7 +135,7 @@ AI-For-Engineers/
 └── README.md
 ```
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Quick Start
 
@@ -196,24 +196,23 @@ python api/app.py
 cd frontend && npm start
 ```
 
-## 📚 Usage
+##  Usage
 
 Open the demo interface at http://localhost:3000 or POST to the API endpoint with a question. The system will return a structured explanation that includes an outline of steps, worked calculations or code snippets where relevant, and links to similar problems or reference notes when available.
 
 Users are encouraged to provide feedback on answers to improve subsequent retraining.
 
-## 👥 Team
+##  Team
 
-1. **Sai Spoorthy Eturu** - Team lead, MLOps and deployment  
-2. **Sahithi Rithvika Katakam** - Data engineer, scraping and dataset management  
-3. **Shivani Edigi** - ML engineer, model design and evaluation  
-4. **Hari Hansika Kommera** - Backend and frontend development
-
+1. **Sai Spoorthy Eturu** - Team lead,   
+2. **Sahithi Rithvika Katakam** -  
+3. **Shivani Edigi** -   
+4. **Hari Hansika Kommera** - 
 **Under the guidance of:**  
 **A Naga Kalyani** - Assistant Professor, Dept of CSE (AI&ML)  
 BVRIT Hyderabad College of Engineering for Women
 
-## 🔄 Development Workflow
+##  Development Workflow
 
 1. Create a feature branch for each task using a descriptive name
 2. Work locally and keep commits small and meaningful
@@ -221,7 +220,7 @@ BVRIT Hyderabad College of Engineering for Women
 4. Ensure tests run in CI and address review comments before merging
 5. Avoid pushing directly to main
 
-## 🎯 Future Enhancements
+##  Future Enhancements
 
 1. OCR pipeline to support scanned or handwritten problems
 2. Voice-based query input and spoken explanations
@@ -229,20 +228,20 @@ BVRIT Hyderabad College of Engineering for Women
 4. Broader subject coverage and improved model explainability
 5. Dashboard for analytics, dataset drift detection and retraining triggers
 
-## 📄 License
+##  License
 
 This repository is published under the MIT License and is intended for academic and research purposes. Please include attribution if you reuse significant parts of the code or datasets.
 
-## 🆘 Support
+##  Support
 
 Use the GitHub Issues section to report bugs, request features, or suggest new datasets. Include input examples and expected behavior to help reproduce issues.
 
-## 🔗 Repository
+##  Repository
 
 **GitHub**: https://github.com/Esssp/AI-For-Engineers.git
 
 ---
 
-## 🎓 Building Better Engineers
+##  Building Better Engineers
 
 Our ultimate goal is to shift the educational paradigm away from mere answer-finding towards profound conceptual understanding, equipping the next generation with genuine analytical capabilities.
