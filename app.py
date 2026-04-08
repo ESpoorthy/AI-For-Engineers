@@ -13,6 +13,16 @@ import os
 from pathlib import Path
 
 app = Flask(__name__)
+SETTINGS_FILE = os.path.join(os.path.dirname(__file__), "user_settings.json")
+def load_settings():
+    if os.path.exists(SETTINGS_FILE):
+        with open(SETTINGS_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+def save_settings(data):
+    with open(SETTINGS_FILE, "w") as f:
+        json.dump(data, f)
 CORS(app)
 
 class DemoMathematicalAssistant:
@@ -248,6 +258,17 @@ def settings(email):
     if request.method == "GET":
         settings = users.get(email + "_settings", {"theme": "light", "notifications": True})
         return jsonify(settings)
+        @app.route("/api/settings", methods=["GET"])
+def get_settings():
+    """Return current user settings"""
+    return jsonify(load_settings())
+
+@app.route("/api/settings", methods=["POST"])
+def update_settings():
+    """Update user settings"""
+    data = request.json
+    save_settings(data)
+    return jsonify({"status": "success", "settings": data})
 
 @app.route('/api/solve', methods=['POST'])
 def solve_problem():
