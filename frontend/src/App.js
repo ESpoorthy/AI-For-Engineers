@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
+import Settings from "./Settings";
+
 
 function App() {
   const [question, setQuestion] = useState('');
@@ -171,6 +173,8 @@ function App() {
 
   return (
     <div className="app">
+        <Settings user={user} />
+
       <header>
         <h1>🧮 AI for Engineers</h1>
         <p>Your intelligent learning assistant for step-by-step solutions</p>
