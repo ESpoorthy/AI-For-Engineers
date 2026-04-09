@@ -1,135 +1,77 @@
-# Quick Start Guide - AI for Engineers Model
+# Quick Start — AI for Engineers
 
-## Installation
+## Prerequisites
+
+- Python 3.8+
+- API keys for Gemini and/or OpenAI
+
+## 1. Install Dependencies
 
 ```bash
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-## Step 1: Test Model Architecture
+## 2. Set Up API Keys
 
-Verify the model implementation works:
+Create a `.env` file in the project root:
+
+```env
+GEMINI_KEY_1=your_first_gemini_key
+GEMINI_KEY_2=your_second_gemini_key
+GEMINI_KEY_3=your_third_gemini_key
+OPENAI_API_KEY=your_openai_key
+```
+
+> Keys are loaded via environment variables only. The `.env` file is gitignored — never commit it.
+
+Get Gemini keys free at [Google AI Studio](https://aistudio.google.com/app/apikey).
+
+## 3. Run the App
 
 ```bash
-python training/test_model.py
+export $(cat .env | xargs) && python3 app.py
 ```
 
-Expected output:
-```
-Testing Positional Encoding...
-✓ Positional encoding works correctly
+## 4. Open the App
 
-Testing Transformer Block...
-✓ Transformer block works correctly
+Go to **http://localhost:8080**
 
-Testing Full Model...
-✓ Model forward pass works correctly
-✓ Total trainable parameters: X,XXX,XXX
+One URL. One command. UI and API both run here — no separate servers needed.
 
-✅ All tests passed!
-```
+---
 
-## Step 2: Train the Model
+## Try These Questions
 
-Train on the sample dataset:
+- `Find the polar form of z = 1 + i`
+- `Solve dy/dx + 2y = 4`
+- `What is a Laplace transform?`
+- `What is a DFA?`
+- `Find the 12th term of the AP: 4, 9, 14, ...`
+- `Explain eigenvalues`
+- `Solve x³ - 6x² + 11x - 6 = 0`
+
+---
+
+## Quick API Test
 
 ```bash
-python training/train_model.py
-```
-
-This will:
-- Load training data from `data/processed/training_data.json`
-- Train for 10 epochs (adjust in script)
-- Save model to `models/saved_models/`
-- Create checkpoints in `models/checkpoints/`
-
-## Step 3: Test Inference
-
-```python
-from training.inference import EngineeringAssistant
-
-# Load trained model
-assistant = EngineeringAssistant()
-assistant.load_model()
-
-# Ask a question
-result = assistant.get_explanation("What is a deterministic finite automaton?")
-
-print(result['explanation'])
-print("\nSteps:")
-for step in result['steps']:
-    print(f"  {step}")
-```
-
-## Step 4: Start API Server
-
-```bash
-python api/app.py
-```
-
-Server runs on http://localhost:5000
-
-## Step 5: Test API
-
-```bash
-# Test health endpoint
-curl http://localhost:5000/health
-
-# Ask a question
-curl -X POST http://localhost:5000/api/solve \
+curl -X POST http://localhost:8080/api/solve \
   -H "Content-Type: application/json" \
-  -d '{"question": "Explain the dot product of vectors"}'
+  -d '{"question": "What is sin(90°)?"}'
 ```
-
-## Step 6: Connect Frontend
-
-The React frontend (already created) will connect to the API automatically.
 
 ```bash
-cd frontend
-npm start
+curl http://localhost:8080/health
 ```
 
-Visit http://localhost:3000 to use the web interface.
-
-## Adding Your Own Data
-
-Edit `data/processed/training_data.json`:
-
-```json
-[
-  {
-    "question": "Your engineering question",
-    "answer": "Step 1: First explanation. Step 2: Second point. Step 3: Conclusion."
-  }
-]
-```
-
-Then retrain:
-```bash
-python training/train_model.py
-```
+---
 
 ## Troubleshooting
 
-### Out of Memory
-- Reduce `BATCH_SIZE` in `train_model.py`
-- Reduce `MAX_LENGTH` or `EMBED_DIM`
+**Port already in use**: Edit `app.py` and change `port=8080` to another port.
 
-### Slow Training
-- Use GPU: `pip install tensorflow-gpu`
-- Reduce `NUM_LAYERS` or `NUM_HEADS`
+**Keys not loading**: Make sure `.env` has no spaces around `=` and no quotes around values.
 
-### Poor Quality Answers
-- Add more training data
-- Train for more epochs
-- Adjust `temperature` in inference (lower = more focused)
+**Missing module**: Run `pip install -r requirements.txt` again.
 
-## Next Steps
-
-1. Collect more engineering Q&A data
-2. Fine-tune on specific domains (automata, algebra, etc.)
-3. Implement web scraping (see `scraper/scraper.py`)
-4. Add monitoring and metrics
-5. Deploy to cloud (see `deployment/Dockerfile`)
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more.

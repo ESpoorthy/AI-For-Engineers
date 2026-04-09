@@ -1,250 +1,150 @@
-# AI for Engineers - System Architecture
+# Architecture — AI for Engineers
 
-## High-Level Architecture
+## Overview
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                         Frontend                             │
-│                      (React + CSS)                           │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  • Question Input Form                                │  │
-│  │  • Answer Display                                     │  │
-│  │  • Loading States                                     │  │
-│  └──────────────────────────────────────────────────────┘  │
-└────────────────────────┬────────────────────────────────────┘
-                         │ HTTP POST /api/solve
-                         │ {"question": "..."}
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      Flask API Server                        │
-│                      (api/app.py)                            │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  • Request Validation                                 │  │
-│  │  • Error Handling                                     │  │
-│  │  • Response Formatting                                │  │
-│  └──────────────────────────────────────────────────────┘  │
-└────────────────────────┬────────────────────────────────────┘
-                         │ get_explanation(question)
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   Inference Engine                           │
-│              (training/inference.py)                         │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  • Question Preprocessing                             │  │
-│  │  • Tokenization                                       │  │
-│  │  • Autoregressive Generation                          │  │
-│  │  • Answer Decoding                                    │  │
-│  │  • Step Extraction                                    │  │
-│  └──────────────────────────────────────────────────────┘  │
-└────────────────────────┬────────────────────────────────────┘
-                         │ model(input_tokens)
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│                  Transformer Model                           │
-│                 (training/model.py)                          │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  Input: Token IDs [batch, seq_len]                   │  │
-│  │                                                        │  │
-│  │  ┌──────────────────────────────────────────────┐   │  │
-│  │  │  Token Embedding (vocab_size → embed_dim)    │   │  │
-│  │  └──────────────────────────────────────────────┘   │  │
-│  │                      ↓                                │  │
-│  │  ┌──────────────────────────────────────────────┐   │  │
-│  │  │  Positional Encoding (sin/cos)               │   │  │
-│  │  └──────────────────────────────────────────────┘   │  │
-│  │                      ↓                                │  │
-│  │  ┌──────────────────────────────────────────────┐   │  │
-│  │  │  Transformer Block 1                         │   │  │
-│  │  │    • Multi-Head Attention (8 heads)          │   │  │
-│  │  │    • Layer Norm + Residual                   │   │  │
-│  │  │    • Feed-Forward (512 units)                │   │  │
-│  │  │    • Layer Norm + Residual                   │   │  │
-│  │  └──────────────────────────────────────────────┘   │  │
-│  │                      ↓                                │  │
-│  │  ┌──────────────────────────────────────────────┐   │  │
-│  │  │  Transformer Blocks 2-6 (same structure)     │   │  │
-│  │  └──────────────────────────────────────────────┘   │  │
-│  │                      ↓                                │  │
-│  │  ┌──────────────────────────────────────────────┐   │  │
-│  │  │  Output Layer (embed_dim → vocab_size)       │   │  │
-│  │  └──────────────────────────────────────────────┘   │  │
-│  │                                                        │  │
-│  │  Output: Logits [batch, seq_len, vocab_size]         │  │
-│  └──────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## Data Flow
-
-### Training Pipeline
+The application is a **unified Flask app** that serves both the frontend UI and all API endpoints from a single process on port 8080. No separate servers, no React build step, no proxy configuration needed.
 
 ```
-Raw Q&A Data (JSON)
-        ↓
-┌───────────────────────┐
-│  Data Pipeline        │
-│  • Load JSON          │
-│  • Clean text         │
-│  • Create tokenizer   │
-│  • Generate sequences │
-└───────────────────────┘
-        ↓
-Training Dataset (TF Dataset)
-        ↓
-┌───────────────────────┐
-│  Model Training       │
-│  • Forward pass       │
-│  • Compute loss       │
-│  • Backpropagation    │
-│  • Update weights     │
-└───────────────────────┘
-        ↓
-Saved Model + Tokenizer
+Browser
+  │
+  │  GET /           → serves ui/index.html
+  │  POST /api/solve → answer engine
+  │  GET  /health    → status check
+  │
+  ▼
+┌──────────────────────────────────────┐
+│        app.py  (Flask, port 8080)    │
+│                                      │
+│  ┌──────────────┐  ┌──────────────┐  │
+│  │  UI Route    │  │  API Routes  │  │
+│  │  GET /       │  │  POST /api/* │  │
+│  └──────┬───────┘  └──────┬───────┘  │
+│         │                 │          │
+│         ▼                 ▼          │
+│   ui/index.html     Answer Engine   │
+└──────────────────────────────────────┘
 ```
 
-### Inference Pipeline
+---
+
+## Answer Engine (Priority Order)
 
 ```
-User Question (Text)
-        ↓
-┌───────────────────────┐
-│  Preprocessing        │
-│  • Format question    │
-│  • Tokenize           │
-│  • Pad sequence       │
-└───────────────────────┘
-        ↓
-Input Token IDs
-        ↓
-┌───────────────────────┐
-│  Autoregressive Gen   │
-│  Loop:                │
-│  1. Model forward     │
-│  2. Sample next token │
-│  3. Append to input   │
-│  4. Repeat            │
-└───────────────────────┘
-        ↓
-Generated Token IDs
-        ↓
-┌───────────────────────┐
-│  Postprocessing       │
-│  • Decode tokens      │
-│  • Extract answer     │
-│  • Format steps       │
-└───────────────────────┘
-        ↓
-Structured Answer (JSON)
+Question
+   │
+   ▼
+┌──────────────────────────────────┐
+│  1. Built-in Knowledge Base      │  ← 30+ topics, instant, no API call
+│     (keyword pattern matching)   │
+└──────────────┬───────────────────┘
+               │ no match
+               ▼
+┌──────────────────────────────────┐
+│  2. Google Gemini AI             │  ← gemini-2.5-flash
+│     Rotates: KEY_1 → KEY_2 → KEY_3 │
+└──────────────┬───────────────────┘
+               │ quota / error
+               ▼
+┌──────────────────────────────────┐
+│  3. OpenAI GPT-3.5               │  ← OPENAI_API_KEY
+└──────────────┬───────────────────┘
+               │ error
+               ▼
+┌──────────────────────────────────┐
+│  4. Structured Fallback          │  ← generic step-by-step response
+└──────────────────────────────────┘
+               │
+               ▼
+         JSON Response
 ```
 
-## Model Architecture Details
+---
 
-### Transformer Block
+## API Keys
 
-```
-Input [batch, seq_len, embed_dim]
-        ↓
-┌─────────────────────────────────┐
-│  Multi-Head Attention           │
-│  ┌───────────────────────────┐ │
-│  │  Q, K, V = Linear(input)  │ │
-│  │  Attention = softmax(QK/√d)│ │
-│  │  Output = Attention × V    │ │
-│  └───────────────────────────┘ │
-└─────────────────────────────────┘
-        ↓
-    Dropout
-        ↓
-  Add & Norm (Residual)
-        ↓
-┌─────────────────────────────────┐
-│  Feed-Forward Network           │
-│  ┌───────────────────────────┐ │
-│  │  Linear(embed_dim → 512)  │ │
-│  │  ReLU                      │ │
-│  │  Linear(512 → embed_dim)  │ │
-│  └───────────────────────────┘ │
-└─────────────────────────────────┘
-        ↓
-    Dropout
-        ↓
-  Add & Norm (Residual)
-        ↓
-Output [batch, seq_len, embed_dim]
-```
-
-## Component Interactions
+Keys stored in `.env`, loaded as environment variables at startup:
 
 ```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   Frontend   │────▶│   Flask API  │────▶│  Inference   │
-│   (React)    │◀────│   (Python)   │◀────│   Engine     │
-└──────────────┘     └──────────────┘     └──────────────┘
-                                                   │
-                                                   ▼
-                                          ┌──────────────┐
-                                          │ Transformer  │
-                                          │    Model     │
-                                          └──────────────┘
-                                                   │
-                                                   ▼
-                                          ┌──────────────┐
-                                          │  Tokenizer   │
-                                          └──────────────┘
+GEMINI_KEY_1, GEMINI_KEY_2, GEMINI_KEY_3  → rotated per request
+OPENAI_API_KEY                             → used as fallback
 ```
 
-## File Organization
+Keys are never hardcoded in source files. The `.env` file is gitignored.
+
+---
+
+## Core Files
+
+```
+app.py              ← entry point; Flask app with all routes + answer engine
+ui/index.html       ← full frontend (HTML/CSS/JS, no build step)
+.env                ← API keys (gitignored)
+requirements.txt    ← Python dependencies
+```
+
+---
+
+## UI Architecture
+
+`ui/index.html` is a self-contained single-page app (no framework, no build step):
+
+- **Sidebar**: chat history, games, user profile — managed via localStorage
+- **Chat area**: scrollable, renders rich answer cards with MathJax
+- **Answer cards**: built from JSON response:
+  - Gradient banner (source badge + confidence)
+  - Question box (blue), summary box (green)
+  - Collapsible step list with numbered circles + emoji icons
+  - Concept tags, verification box (yellow), tips box (purple)
+  - Slide-in animation
+- **Games**: Step Builder, Concept Matcher, Formula Quest, Visual Solver — all in-page
+- **Profiles**: multi-user support with progress tracking and badges
+- **Charts**: weekly progress (bar + line) using Canvas API
+- **Theme**: dark / light / system via CSS class switching
+
+API calls use relative paths (`/api/solve`) — always hit the same Flask server.
+
+---
+
+## Legacy Directories
+
+These exist from earlier development phases and are not required to run the app:
+
+| Directory | Original Purpose |
+|-----------|-----------------|
+| `api/` | Standalone Flask API servers |
+| `frontend/` | React app (Vite + Node.js) |
+| `servers/` | Separate UI server scripts |
+
+---
+
+## ML Model (Research / Training)
+
+A custom transformer model is included for research. It is not used in the live answer engine (Gemini/OpenAI handle that), but the training pipeline is fully functional.
 
 ```
 training/
-├── model.py           → Defines model architecture
-├── data_pipeline.py   → Handles data loading/preprocessing
-├── train_model.py     → Training loop and optimization
-├── inference.py       → Generation and decoding
-└── config.py          → Hyperparameters
+├── model.py          ← Transformer (6 layers, 8 heads, 256 dim, 8.2M params)
+├── train_model.py    ← Training loop with checkpointing
+├── inference.py      ← Autoregressive generation
+└── config.py         ← Hyperparameters
 
-api/
-└── app.py            → Flask endpoints
-
-frontend/
-└── src/
-    ├── App.js        → React components
-    └── App.css       → Styling
-
-data/
-└── processed/
-    └── training_data.json → Q&A dataset
-
+data/processed/       ← JSON training datasets
 models/
-├── saved_models/     → Trained weights
-└── checkpoints/      → Training snapshots
+├── saved_models/     ← Final weights + tokenizer
+└── checkpoints/      ← Per-epoch snapshots
 ```
 
-## Key Design Decisions
+---
 
-1. **Transformer Architecture**: Self-attention for context understanding
-2. **Autoregressive Generation**: Token-by-token prediction
-3. **Masked Loss**: Ignore padding in loss calculation
-4. **Top-k Sampling**: Balance between quality and diversity
-5. **Step-by-Step Format**: Structured educational responses
-6. **Modular Design**: Separate concerns for maintainability
-7. **REST API**: Standard HTTP interface
-8. **React Frontend**: Modern, responsive UI
+## Deployment
 
-## Scalability Considerations
+### Local
+```bash
+export $(cat .env | xargs) && python3 app.py
+# → http://localhost:8080
+```
 
-- **Model Size**: Can scale up layers/dimensions for better performance
-- **Batch Processing**: API supports batch endpoint
-- **Caching**: Can add Redis for frequent questions
-- **Load Balancing**: Multiple API instances behind load balancer
-- **GPU Acceleration**: TensorFlow supports GPU out of the box
-- **Distributed Training**: Can use tf.distribute for large datasets
-
-## Security & Production
-
-- CORS enabled for frontend
-- Input validation on API
-- Error handling throughout
-- Docker containerization
-- Environment-based configuration
-- Health check endpoint
+### Docker
+```bash
+docker-compose -f deployment/docker-compose.yml up --build
+```
