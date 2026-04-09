@@ -1,6 +1,26 @@
 # AI for Engineers
 
-An intelligent learning assistant for engineering students with adaptive user interface, 30+ topic built-in knowledge base, Google Gemini AI, and interactive learning tools. Everything runs from a single unified Flask application.
+An intelligent learning assistant for **all engineering disciplines** — not just mathematics. Whether you're studying Thermodynamics, Control Systems, Fluid Mechanics, Digital Electronics, Signals & Systems, Strength of Materials, or Artificial Intelligence, this assistant explains concepts step-by-step, answers questions, and helps you learn through interactive games and flashcards.
+
+Powered by Google Gemini AI with a 30+ topic built-in knowledge base, everything runs from a single unified Flask application.
+
+---
+
+## What Subjects Does It Cover?
+
+### 🟢 Level 1 — Foundational
+Engineering Graphics/CAD · Basic Mechanical Engineering · Computer Programming (Python/C) · Environmental Science · Industrial Management · Surveying
+
+### 🟡 Level 2 — Intermediate
+Solid Mechanics / Strength of Materials · Engineering Mathematics (Calculus I & II) · Thermodynamics · Digital Electronics · Fluid Mechanics · Data Structures & Algorithms
+
+### 🔴 Level 3 — Advanced
+Electromagnetic Field Theory (EMFT) · Control Systems · Signals & Systems / DSP · Nuclear Reactor Physics · Aerodynamics / Propulsion · Reaction Engineering · Artificial Intelligence & Machine Learning
+
+### 🎓 Branches Covered
+Aerospace Engineering · Chemical Engineering · Civil Engineering · Computer Science Engineering · Electrical & Electronics Engineering · Mechanical Engineering · Nuclear Engineering
+
+> **Ask anything** — if it's not in the built-in knowledge base, Google Gemini AI answers it with full step-by-step explanations.
 
 ---
 
@@ -204,13 +224,28 @@ docker-compose -f deployment/docker-compose.yml up --build
 
 ## Example Questions to Try
 
+### Mathematics
 - `Find the polar form of the complex number z = 1 + i`
 - `Solve the differential equation dy/dx + 2y = 4`
+- `Find the eigenvalues of matrix [[4,1],[2,3]]`
+
+### Core Engineering
+- `Explain the first law of thermodynamics`
+- `What is Bernoulli's equation in fluid mechanics?`
+- `Explain Newton's second law with an example`
+- `What is Ohm's Law?`
+
+### Electronics & CS
 - `What is a deterministic finite automaton?`
-- `Explain eigenvalues`
-- `Find the 12th term of the AP: 4, 9, 14, ...`
-- `What is the Fourier series of f(x) = x?`
-- `Solve x³ - 6x² + 11x - 6 = 0`
+- `Explain logic gates and truth tables`
+- `What is the difference between BFS and DFS?`
+- `Explain Fourier transform and its applications`
+
+### Advanced Topics
+- `What is electromagnetic field theory?`
+- `Explain PID control in control systems`
+- `What is digital signal processing?`
+- `Explain the concept of machine learning`
 
 ---
 

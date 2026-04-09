@@ -819,22 +819,62 @@
   <script>
     // ── FLASHCARDS ──
     const FC_CARDS = [
-      { topic:'Calculus',      color:['#7c3aed','#4f46e5'], front:'d/dx(xⁿ)',                    back:'n · xⁿ⁻¹\nPower Rule' },
-      { topic:'Calculus',      color:['#0ea5e9','#6366f1'], front:'∫ xⁿ dx',                     back:'xⁿ⁺¹ / (n+1) + C\nIntegration Power Rule' },
-      { topic:'Calculus',      color:['#8b5cf6','#ec4899'], front:'d/dx(sin x)',                  back:'cos x' },
-      { topic:'Calculus',      color:['#06b6d4','#3b82f6'], front:'d/dx(eˣ)',                     back:'eˣ\n(unchanged!)' },
-      { topic:'Algebra',       color:['#f59e0b','#ef4444'], front:'Quadratic Formula',            back:'x = (−b ± √(b²−4ac)) / 2a' },
-      { topic:'Algebra',       color:['#10b981','#059669'], front:'(a + b)²',                     back:'a² + 2ab + b²' },
-      { topic:'Algebra',       color:['#f97316','#dc2626'], front:'Difference of Squares',        back:'a² − b² = (a+b)(a−b)' },
-      { topic:'Trigonometry',  color:['#a855f7','#6366f1'], front:'sin²θ + cos²θ',               back:'= 1\nPythagorean Identity' },
-      { topic:'Trigonometry',  color:['#14b8a6','#0ea5e9'], front:'sin(A+B)',                     back:'sinA·cosB + cosA·sinB' },
-      { topic:'Trigonometry',  color:['#ec4899','#f43f5e'], front:'tan θ',                        back:'sin θ / cos θ' },
-      { topic:'Linear Algebra',color:['#6366f1','#8b5cf6'], front:'det([[a,b],[c,d]])',           back:'ad − bc' },
-      { topic:'Linear Algebra',color:['#0284c7','#0ea5e9'], front:'Dot Product A·B',              back:'|A||B|cos θ' },
-      { topic:'Statistics',    color:['#16a34a','#15803d'], front:'Mean',                         back:'Σx / n\nSum of values ÷ count' },
-      { topic:'Statistics',    color:['#ca8a04','#b45309'], front:'Standard Deviation',           back:'√(Σ(x−μ)² / n)' },
-      { topic:'Physics',       color:['#dc2626','#b91c1c'], front:"Newton's 2nd Law",             back:'F = ma\nForce = mass × acceleration' },
-      { topic:'Physics',       color:['#7c3aed','#5b21b6'], front:'Ohm\'s Law',                  back:'V = IR\nVoltage = Current × Resistance' },
+      // ── Calculus ──
+      { topic:'Calculus',         color:['#7c3aed','#4f46e5'], front:'d/dx(xⁿ)',                      back:'n · xⁿ⁻¹\nPower Rule' },
+      { topic:'Calculus',         color:['#0ea5e9','#6366f1'], front:'∫ xⁿ dx',                       back:'xⁿ⁺¹ / (n+1) + C\nIntegration Power Rule' },
+      { topic:'Calculus',         color:['#8b5cf6','#ec4899'], front:'d/dx(sin x)',                    back:'cos x' },
+      { topic:'Calculus',         color:['#06b6d4','#3b82f6'], front:'d/dx(eˣ)',                       back:'eˣ  (unchanged!)' },
+      { topic:'Calculus',         color:['#7c3aed','#06b6d4'], front:'Chain Rule',                     back:'d/dx[f(g(x))] = f\'(g(x))·g\'(x)' },
+      { topic:'Calculus',         color:['#4f46e5','#7c3aed'], front:'∫ eˣ dx',                        back:'eˣ + C' },
+      { topic:'Calculus',         color:['#0891b2','#6366f1'], front:'Fundamental Theorem',            back:'∫ₐᵇ f(x)dx = F(b) − F(a)' },
+      // ── Algebra ──
+      { topic:'Algebra',          color:['#f59e0b','#ef4444'], front:'Quadratic Formula',              back:'x = (−b ± √(b²−4ac)) / 2a' },
+      { topic:'Algebra',          color:['#10b981','#059669'], front:'(a + b)²',                       back:'a² + 2ab + b²' },
+      { topic:'Algebra',          color:['#f97316','#dc2626'], front:'Difference of Squares',          back:'a² − b² = (a+b)(a−b)' },
+      { topic:'Algebra',          color:['#d97706','#b45309'], front:'Sum of Cubes',                   back:'a³ + b³ = (a+b)(a²−ab+b²)' },
+      // ── Trigonometry ──
+      { topic:'Trigonometry',     color:['#a855f7','#6366f1'], front:'sin²θ + cos²θ',                 back:'= 1  (Pythagorean Identity)' },
+      { topic:'Trigonometry',     color:['#14b8a6','#0ea5e9'], front:'sin(A+B)',                       back:'sinA·cosB + cosA·sinB' },
+      { topic:'Trigonometry',     color:['#ec4899','#f43f5e'], front:'tan θ',                          back:'sin θ / cos θ' },
+      { topic:'Trigonometry',     color:['#8b5cf6','#14b8a6'], front:'cos(2θ)',                        back:'cos²θ − sin²θ\n= 1 − 2sin²θ' },
+      // ── Linear Algebra ──
+      { topic:'Linear Algebra',   color:['#6366f1','#8b5cf6'], front:'det([[a,b],[c,d]])',             back:'ad − bc' },
+      { topic:'Linear Algebra',   color:['#0284c7','#0ea5e9'], front:'Dot Product A·B',                back:'|A||B|cos θ\n= ΣAᵢBᵢ' },
+      { topic:'Linear Algebra',   color:['#7c3aed','#0284c7'], front:'Eigenvalue equation',            back:'Av = λv\ndet(A − λI) = 0' },
+      { topic:'Linear Algebra',   color:['#4f46e5','#6366f1'], front:'Cross Product |A×B|',            back:'|A||B|sin θ' },
+      // ── Statistics ──
+      { topic:'Statistics',       color:['#16a34a','#15803d'], front:'Mean',                           back:'x̄ = Σx / n' },
+      { topic:'Statistics',       color:['#ca8a04','#b45309'], front:'Standard Deviation',             back:'σ = √(Σ(x−μ)² / n)' },
+      { topic:'Statistics',       color:['#059669','#0891b2'], front:"Bayes' Theorem",                 back:'P(A|B) = P(B|A)·P(A) / P(B)' },
+      { topic:'Statistics',       color:['#16a34a','#ca8a04'], front:'Normal Distribution',            back:'68% within 1σ\n95% within 2σ\n99.7% within 3σ' },
+      // ── Physics / Mechanics ──
+      { topic:'Physics',          color:['#dc2626','#b91c1c'], front:"Newton's 2nd Law",               back:'F = ma\nForce = mass × acceleration' },
+      { topic:'Physics',          color:['#7c3aed','#5b21b6'], front:"Ohm's Law",                      back:'V = IR\nVoltage = Current × Resistance' },
+      { topic:'Physics',          color:['#b45309','#dc2626'], front:'Kinetic Energy',                  back:'KE = ½mv²' },
+      { topic:'Physics',          color:['#0891b2','#0284c7'], front:'Work Done',                       back:'W = F·d·cos θ' },
+      // ── Thermodynamics ──
+      { topic:'Thermodynamics',   color:['#ef4444','#f97316'], front:'1st Law of Thermodynamics',      back:'ΔU = Q − W\nEnergy is conserved' },
+      { topic:'Thermodynamics',   color:['#f97316','#eab308'], front:'2nd Law of Thermodynamics',      back:'Entropy of isolated system\nalways increases' },
+      { topic:'Thermodynamics',   color:['#dc2626','#b91c1c'], front:'Ideal Gas Law',                  back:'PV = nRT\nP=pressure, V=volume, T=temp' },
+      { topic:'Thermodynamics',   color:['#b45309','#ef4444'], front:'Carnot Efficiency',              back:'η = 1 − T_cold/T_hot' },
+      // ── Fluid Mechanics ──
+      { topic:'Fluid Mechanics',  color:['#0284c7','#06b6d4'], front:"Bernoulli's Equation",           back:'P + ½ρv² + ρgh = constant' },
+      { topic:'Fluid Mechanics',  color:['#0891b2','#0284c7'], front:'Reynolds Number',                back:'Re = ρvL/μ\nRe<2000: laminar\nRe>4000: turbulent' },
+      { topic:'Fluid Mechanics',  color:['#06b6d4','#3b82f6'], front:'Continuity Equation',            back:'A₁v₁ = A₂v₂\n(mass conservation)' },
+      // ── Electronics ──
+      { topic:'Electronics',      color:['#f59e0b','#f97316'], front:'Logic Gate: NAND',               back:'Output = NOT(A AND B)\nUniversal gate' },
+      { topic:'Electronics',      color:['#eab308','#f59e0b'], front:'Capacitor Energy',               back:'E = ½CV²' },
+      { topic:'Electronics',      color:['#f97316','#ef4444'], front:'Inductor Voltage',               back:'V = L · dI/dt' },
+      { topic:'Electronics',      color:['#d97706','#b45309'], front:'Kirchhoff\'s Voltage Law',       back:'ΣV = 0 around any closed loop' },
+      // ── Control Systems ──
+      { topic:'Control Systems',  color:['#6366f1','#4f46e5'], front:'Transfer Function',              back:'G(s) = Output(s) / Input(s)\n(Laplace domain)' },
+      { topic:'Control Systems',  color:['#8b5cf6','#6366f1'], front:'PID Controller',                 back:'u(t) = Kp·e + Ki∫e dt + Kd·de/dt' },
+      // ── Signals & Systems ──
+      { topic:'Signals & Systems',color:['#0ea5e9','#8b5cf6'], front:'Fourier Transform',              back:'F(ω) = ∫f(t)·e^(−jωt) dt' },
+      { topic:'Signals & Systems',color:['#6366f1','#0ea5e9'], front:'Sampling Theorem',               back:'fs ≥ 2·fmax\n(Nyquist criterion)' },
+      // ── Strength of Materials ──
+      { topic:'Strength of Materials', color:['#b45309','#92400e'], front:"Hooke's Law",               back:'σ = E·ε\nStress = Young\'s Modulus × Strain' },
+      { topic:'Strength of Materials', color:['#92400e','#b45309'], front:'Factor of Safety',          back:'FoS = Ultimate Stress / Working Stress' },
     ];
     let fcIndex = 0;
 
@@ -854,7 +894,7 @@
       const [c1, c2] = c.color;
 
       // Topic emoji map
-      const topicEmoji = { Calculus:'📐', Algebra:'🔢', Trigonometry:'📏', 'Linear Algebra':'🧮', Statistics:'📊', Physics:'⚡' };
+      const topicEmoji = { Calculus:'📐', Algebra:'🔢', Trigonometry:'📏', 'Linear Algebra':'🧮', Statistics:'📊', Physics:'⚡', Thermodynamics:'🔥', 'Fluid Mechanics':'💧', Electronics:'⚡', 'Control Systems':'🎛️', 'Signals & Systems':'📡', 'Strength of Materials':'🏗️' };
       const emoji = topicEmoji[c.topic] || '📌';
 
       front.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
@@ -881,7 +921,7 @@
 
     function renderFcTopics() {
       const topics = [...new Set(FC_CARDS.map(c => c.topic))];
-      const topicEmoji = { Calculus:'📐', Algebra:'🔢', Trigonometry:'📏', 'Linear Algebra':'🧮', Statistics:'📊', Physics:'⚡' };
+      const topicEmoji = { Calculus:'📐', Algebra:'🔢', Trigonometry:'📏', 'Linear Algebra':'🧮', Statistics:'📊', Physics:'⚡', Thermodynamics:'🔥', 'Fluid Mechanics':'💧', Electronics:'⚡', 'Control Systems':'🎛️', 'Signals & Systems':'📡', 'Strength of Materials':'🏗️' };
       const el = document.getElementById('fcTopics');
       if (!el) return;
       el.innerHTML = topics.map(t =>
@@ -1325,33 +1365,65 @@
     }
 
     // ── STEP BUILDER ──
-    // Correct order indices: 0,1,2,3 (already in correct order in the data)
-    const SB_STEPS = [
-      { id:0, text:'Identify the function: f(x) = x² + 3x' },
-      { id:1, text:'Apply power rule to x²: d/dx(x²) = 2x' },
-      { id:2, text:'Apply power rule to 3x: d/dx(3x) = 3' },
-      { id:3, text:'Combine results: f\'(x) = 2x + 3' },
+    const SB_PROBLEMS = [
+      {
+        title: 'Differentiate f(x) = x² + 3x',
+        steps: [
+          { id:0, text:'Identify the function: f(x) = x² + 3x' },
+          { id:1, text:'Apply power rule to x²: d/dx(x²) = 2x' },
+          { id:2, text:'Apply power rule to 3x: d/dx(3x) = 3' },
+          { id:3, text:'Combine results: f\'(x) = 2x + 3' },
+        ]
+      },
+      {
+        title: 'Apply Newton\'s 2nd Law to find acceleration',
+        steps: [
+          { id:0, text:'Write Newton\'s 2nd Law: F = ma' },
+          { id:1, text:'Identify known values: F = 20N, m = 4kg' },
+          { id:2, text:'Rearrange for acceleration: a = F/m' },
+          { id:3, text:'Calculate: a = 20/4 = 5 m/s²' },
+        ]
+      },
+      {
+        title: 'Find the determinant of a 2×2 matrix',
+        steps: [
+          { id:0, text:'Write the matrix: A = [[3,1],[2,4]]' },
+          { id:1, text:'Apply formula: det(A) = ad − bc' },
+          { id:2, text:'Substitute: det = (3)(4) − (1)(2)' },
+          { id:3, text:'Calculate: det = 12 − 2 = 10' },
+        ]
+      },
+      {
+        title: 'Apply Bernoulli\'s equation',
+        steps: [
+          { id:0, text:'Write Bernoulli\'s equation: P + ½ρv² + ρgh = constant' },
+          { id:1, text:'Identify points 1 and 2 in the flow' },
+          { id:2, text:'Apply: P₁ + ½ρv₁² + ρgh₁ = P₂ + ½ρv₂² + ρgh₂' },
+          { id:3, text:'Solve for the unknown pressure or velocity' },
+        ]
+      },
     ];
-    let sbOrder = [];
+    let sbProblemIdx = 0;
 
     function openStepBuilder() {
-      const shuffled = [...SB_STEPS].sort(() => Math.random()-0.5);
-      sbOrder = shuffled.map(s => s.id);
+      sbProblemIdx = Math.floor(Math.random() * SB_PROBLEMS.length);
+      const prob = SB_PROBLEMS[sbProblemIdx];
+      const shuffled = [...prob.steps].sort(() => Math.random()-0.5);
       const html = `
-        <p style="color:#94a3b8;margin-bottom:14px;">Arrange the steps in the correct order to differentiate <strong style="color:#a78bfa;">f(x) = x² + 3x</strong>. Click steps to move them up/down.</p>
+        <p style="color:#94a3b8;margin-bottom:14px;">Arrange the steps in the correct order to solve: <strong style="color:#a78bfa;">${prob.title}</strong></p>
         <div id="sbList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
           ${shuffled.map((s,i) => `
-            <div id="sb-${s.id}" data-idx="${i}" style="background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);padding:12px 14px;border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
-              <span style="color:#e2e8f0;font-size:.9rem;">${s.text}</span>
+            <div id="sb-${s.id}" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.25);padding:12px 14px;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:all .2s;">
+              <span style="color:#e2e8f0;font-size:.9rem;">🔹 ${s.text}</span>
               <div style="display:flex;gap:4px;flex-shrink:0;">
-                <button onclick="sbMove(${s.id},-1)" style="background:rgba(255,255,255,0.08);border:none;color:#94a3b8;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:.85rem;">▲</button>
-                <button onclick="sbMove(${s.id},1)"  style="background:rgba(255,255,255,0.08);border:none;color:#94a3b8;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:.85rem;">▼</button>
+                <button onclick="sbMove(${s.id},-1)" style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);color:#a78bfa;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:.85rem;transition:all .2s;" onmouseover="this.style.background='rgba(167,139,250,0.3)'" onmouseout="this.style.background='rgba(167,139,250,0.15)'">▲</button>
+                <button onclick="sbMove(${s.id},1)"  style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);color:#a78bfa;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:.85rem;transition:all .2s;" onmouseover="this.style.background='rgba(167,139,250,0.3)'" onmouseout="this.style.background='rgba(167,139,250,0.15)'">▼</button>
               </div>
             </div>`).join('')}
         </div>
-        <button onclick="checkStepOrder()" style="background:#7c3aed;color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:.9rem;width:100%;">✅ Check Order</button>
+        <button onclick="checkStepOrder()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;padding:12px 24px;border-radius:10px;cursor:pointer;font-size:.9rem;width:100%;font-weight:600;letter-spacing:0.3px;">✅ Check Order</button>
         <div id="sbResult"></div>`;
-      showGameModal(html, '🧩 Step Builder — Differentiation', 'stepBuilder');
+      showGameModal(html, '🧩 Step Builder — Arrange the Steps', 'stepBuilder');
     }
 
     function sbMove(id, dir) {
@@ -1365,41 +1437,56 @@
     }
 
     function checkStepOrder() {
+      const prob = SB_PROBLEMS[sbProblemIdx];
       const list = document.getElementById('sbList');
       const userOrder = [...list.children].map(el => parseInt(el.id.replace('sb-','')));
-      const correct = [0,1,2,3];
+      const correct = prob.steps.map(s => s.id);
       let score = 0;
       userOrder.forEach((id, i) => { if (id === correct[i]) score++; });
-      const feedback = score===4 ? 'You nailed the derivative steps!' : `Steps ${userOrder.map((id,i)=>id!==correct[i]?i+1:null).filter(Boolean).join(', ')} are out of place.`;
+      const feedback = score===4 ? 'Perfect order! You nailed it!' : `Steps ${userOrder.map((id,i)=>id!==correct[i]?i+1:null).filter(Boolean).join(', ')} are out of place.`;
       document.getElementById('sbResult').innerHTML = gameResult(score===4, score, 4, feedback);
     }
 
     // ── CONCEPT MATCHER ──
-    const CM_PAIRS = [
-      { concept:'Derivative',  match:'Rate of change of a function',    id:'d' },
-      { concept:'Integral',    match:'Area under a curve',              id:'i' },
-      { concept:'Limit',       match:'Value a function approaches',     id:'l' },
-      { concept:'Matrix',      match:'Rectangular array of numbers',    id:'m' },
+    const CM_ALL_PAIRS = [
+      { concept:'Derivative',       match:'Rate of change of a function',          id:'d' },
+      { concept:'Integral',         match:'Area under a curve',                    id:'i' },
+      { concept:'Limit',            match:'Value a function approaches',           id:'l' },
+      { concept:'Matrix',           match:'Rectangular array of numbers',          id:'m' },
+      { concept:'Entropy',          match:'Measure of disorder in a system',       id:'e' },
+      { concept:'Reynolds Number',  match:'Ratio of inertial to viscous forces',   id:'r' },
+      { concept:'Eigenvalue',       match:'Scalar λ where Av = λv',               id:'ev' },
+      { concept:'Transfer Function','match':'Output/Input in Laplace domain',      id:'tf' },
+      { concept:'Fourier Transform','match':'Converts time signal to frequency',   id:'ft' },
+      { concept:'Stress',           match:'Force per unit area',                   id:'st' },
+      { concept:'Capacitance',      match:'Ability to store electric charge',      id:'ca' },
+      { concept:'PID Controller',   match:'Proportional-Integral-Derivative',      id:'pid'},
     ];
     let cmSelected = null;
 
     function openConceptMatch() {
-      const defs = [...CM_PAIRS].sort(()=>Math.random()-0.5);
+      // Pick 5 random pairs each time
+      const shuffledAll = [...CM_ALL_PAIRS].sort(() => Math.random()-0.5);
+      const pairs = shuffledAll.slice(0, 5);
+      const defs = [...pairs].sort(()=>Math.random()-0.5);
       const html = `
-        <p style="color:#94a3b8;margin-bottom:14px;">Click a concept on the left, then click its matching definition on the right.</p>
+        <p style="color:#94a3b8;margin-bottom:14px;">Click a concept, then click its matching definition. <span style="color:#f472b6;">5 pairs to match!</span></p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
           <div style="display:flex;flex-direction:column;gap:8px;">
-            ${CM_PAIRS.map(p=>`<button id="cm-c-${p.id}" onclick="cmSelect('c','${p.id}')" style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.25);color:#e2e8f0;padding:12px;border-radius:8px;cursor:pointer;text-align:left;font-size:.875rem;">${p.concept}</button>`).join('')}
+            <div style="color:#60a5fa;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">📚 Concepts</div>
+            ${pairs.map(p=>`<button id="cm-c-${p.id}" onclick="cmSelect('c','${p.id}')" style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.25);color:#e2e8f0;padding:10px 12px;border-radius:10px;cursor:pointer;text-align:left;font-size:.85rem;transition:all .2s;font-weight:500;">${p.concept}</button>`).join('')}
           </div>
           <div style="display:flex;flex-direction:column;gap:8px;">
-            ${defs.map(p=>`<button id="cm-d-${p.id}" onclick="cmSelect('d','${p.id}')" style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);color:#e2e8f0;padding:12px;border-radius:8px;cursor:pointer;text-align:left;font-size:.875rem;">${p.match}</button>`).join('')}
+            <div style="color:#34d399;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">💡 Definitions</div>
+            ${defs.map(p=>`<button id="cm-d-${p.id}" onclick="cmSelect('d','${p.id}')" style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.2);color:#e2e8f0;padding:10px 12px;border-radius:10px;cursor:pointer;text-align:left;font-size:.82rem;transition:all .2s;">${p.match}</button>`).join('')}
           </div>
         </div>
-        <div id="cmScore" style="color:#64748b;font-size:.85rem;text-align:center;margin-bottom:8px;">Matched: 0 / ${CM_PAIRS.length}</div>
+        <div id="cmScore" style="color:#64748b;font-size:.85rem;text-align:center;margin-bottom:8px;">Matched: 0 / ${pairs.length}</div>
         <div id="cmResult"></div>`;
-      showGameModal(html, '🎯 Concept Matcher — Math Definitions', 'conceptMatch');
+      showGameModal(html, '🎯 Concept Matcher — Engineering Definitions', 'conceptMatch');
       cmSelected = null;
       window._cmMatched = 0;
+      window._cmPairs = pairs;
     }
 
     function cmSelect(type, id) {
@@ -1426,8 +1513,8 @@
           [cBtn,dBtn].forEach(b=>{ b.style.background='rgba(52,211,153,0.2)';b.style.borderColor='#34d399';b.style.color='#34d399';b.disabled=true; });
           window._cmMatched++;
           document.getElementById('cmScore').textContent = `Matched: ${window._cmMatched} / ${CM_PAIRS.length}`;
-          if (window._cmMatched === CM_PAIRS.length) {
-            document.getElementById('cmResult').innerHTML = gameResult(true, CM_PAIRS.length, CM_PAIRS.length, 'You matched all concepts correctly!');
+          if (window._cmMatched === window._cmPairs.length) {
+            document.getElementById('cmResult').innerHTML = gameResult(true, window._cmPairs.length, window._cmPairs.length, 'You matched all concepts correctly!');
           }
         } else {
           [cBtn,dBtn].forEach(b=>{ b.style.background='rgba(239,68,68,0.15)';b.style.borderColor='#ef4444'; });
@@ -1440,43 +1527,54 @@
     }
 
     // ── FORMULA QUEST ──
-    const FQ_QUESTIONS = [
-      { q:'Quadratic formula: x = (−b ± √(b² − ___)) / ___', blanks:['4ac','2a'], hint:'Discriminant and denominator' },
-      { q:'Pythagorean theorem: a² + b² = ___',               blanks:['c²'],       hint:'Sum of squares of two sides' },
-      { q:'Area of circle: A = ___ × r²',                     blanks:['π'],        hint:'Greek letter pi' },
-      { q:'Euler\'s identity: e^(iπ) + ___ = 0',              blanks:['1'],        hint:'A simple integer' },
+    const FQ_ALL = [
+      { q:'Quadratic formula: x = (−b ± √(b² − ___)) / ___', blanks:['4ac','2a'],  hint:'Discriminant and denominator' },
+      { q:'Pythagorean theorem: a² + b² = ___',               blanks:['c²'],        hint:'Hypotenuse squared' },
+      { q:'Area of circle: A = ___ × r²',                     blanks:['π'],         hint:'Greek letter pi' },
+      { q:"Newton's 2nd Law: F = ___ × ___",                  blanks:['m','a'],     hint:'Mass and acceleration' },
+      { q:"Ohm's Law: V = ___ × ___",                         blanks:['I','R'],     hint:'Current and Resistance' },
+      { q:'Kinetic Energy: KE = ½ × ___ × v²',               blanks:['m'],         hint:'Mass' },
+      { q:'Ideal Gas Law: PV = ___ × R × T',                  blanks:['n'],         hint:'Number of moles' },
+      { q:'Power: P = ___ × ___',                             blanks:['V','I'],     hint:'Voltage and Current' },
+      { q:'Euler\'s identity: e^(iπ) + ___ = 0',             blanks:['1'],         hint:'A simple integer' },
+      { q:'Stress: σ = ___ / ___',                            blanks:['F','A'],     hint:'Force over Area' },
     ];
 
     function openFormulaQuest() {
+      // Pick 4 random questions
+      const shuffled = [...FQ_ALL].sort(()=>Math.random()-0.5);
+      const questions = shuffled.slice(0, 4);
       const html = `
-        <p style="color:#94a3b8;margin-bottom:14px;">Fill in the blanks to complete each formula. Answers are case-insensitive.</p>
+        <p style="color:#94a3b8;margin-bottom:14px;">Fill in the blanks to complete each formula. <span style="color:#fbbf24;">Answers are case-insensitive.</span></p>
         <div id="fqList" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
-          ${FQ_QUESTIONS.map((q,qi)=>`
-            <div style="background:rgba(255,183,77,0.07);border:1px solid rgba(255,183,77,0.2);padding:14px;border-radius:10px;">
-              <div style="color:#e2e8f0;font-size:.9rem;margin-bottom:8px;">${qi+1}. ${q.q}</div>
+          ${questions.map((q,qi)=>`
+            <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);padding:14px;border-radius:12px;">
+              <div style="color:#e2e8f0;font-size:.9rem;margin-bottom:8px;font-weight:500;">${qi+1}. ${q.q}</div>
               <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
-                ${q.blanks.map((b,bi)=>`<input id="fq-${qi}-${bi}" type="text" placeholder="blank ${bi+1}" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:#1e293b;color:#fff;font-size:.875rem;width:90px;">`).join('')}
-                <span id="fq-icon-${qi}" style="font-size:1.1rem;"></span>
+                ${q.blanks.map((b,bi)=>`<input id="fq-${qi}-${bi}" type="text" placeholder="blank ${bi+1}" style="padding:7px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:#1e293b;color:#fff;font-size:.875rem;width:90px;transition:border-color .2s;">`).join('')}
+                <span id="fq-icon-${qi}" style="font-size:1.2rem;"></span>
               </div>
-              <div id="fq-hint-${qi}" style="color:#64748b;font-size:.78rem;margin-top:4px;">Hint: ${q.hint}</div>
+              <div style="color:#64748b;font-size:.78rem;margin-top:6px;">💡 ${q.hint}</div>
             </div>`).join('')}
         </div>
-        <button onclick="checkFormulas()" style="background:#7c3aed;color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:.9rem;width:100%;">✅ Check Answers</button>
+        <button onclick="checkFormulas()" style="background:linear-gradient(135deg,#d97706,#dc2626);color:#fff;border:none;padding:12px 24px;border-radius:10px;cursor:pointer;font-size:.9rem;width:100%;font-weight:600;">✅ Check Answers</button>
         <div id="fqResult"></div>`;
       showGameModal(html, '⚡ Formula Quest — Fill the Blanks', 'formulaQuest');
+      window._fqQuestions = questions;
     }
 
     function checkFormulas() {
+      const questions = window._fqQuestions || [];
       let score = 0, total = 0;
       const wrong = [];
-      FQ_QUESTIONS.forEach((q, qi) => {
+      questions.forEach((q, qi) => {
         let qCorrect = true;
         q.blanks.forEach((ans, bi) => {
           total++;
           const val = (document.getElementById(`fq-${qi}-${bi}`)?.value||'').trim().toLowerCase().replace(/\s/g,'');
           const expected = ans.toLowerCase().replace(/\s/g,'');
           const correct = val === expected;
-          if (correct) { score++; } else { qCorrect=false; wrong.push(`Q${qi+1} blank ${bi+1} (expected: ${ans})`); }
+          if (correct) { score++; } else { qCorrect=false; wrong.push(`Q${qi+1} (expected: ${ans})`); }
           const input = document.getElementById(`fq-${qi}-${bi}`);
           if (input) { input.style.borderColor = correct?'#34d399':'#ef4444'; input.style.background = correct?'rgba(52,211,153,0.1)':'rgba(239,68,68,0.1)'; }
         });
@@ -1487,42 +1585,54 @@
     }
 
     // ── VISUAL SOLVER ──
-    const VS_QUESTIONS = [
-      { q:'What is the shape of the graph y = x²?',           options:['Straight line','Parabola','Circle','Hyperbola'], correct:1 },
-      { q:'What does the slope of a line represent?',          options:['Area','Y-intercept','Rate of change','Curvature'], correct:2 },
-      { q:'Where does y = 2x + 3 cross the y-axis?',          options:['x=2','y=2','y=3','x=3'], correct:2 },
-      { q:'What is the period of y = sin(x)?',                 options:['π','2π','π/2','4π'], correct:1 },
+    const VS_ALL = [
+      { q:'What is the shape of the graph y = x²?',                    options:['Straight line','Parabola','Circle','Hyperbola'],          correct:1 },
+      { q:'What does the slope of a line represent?',                   options:['Area','Y-intercept','Rate of change','Curvature'],        correct:2 },
+      { q:'Where does y = 2x + 3 cross the y-axis?',                   options:['x=2','y=2','y=3','x=3'],                                  correct:2 },
+      { q:'What is the period of y = sin(x)?',                         options:['π','2π','π/2','4π'],                                      correct:1 },
+      { q:'In thermodynamics, what does entropy measure?',              options:['Temperature','Pressure','Disorder','Energy'],             correct:2 },
+      { q:'What does Reynolds number determine?',                       options:['Temperature','Flow type (laminar/turbulent)','Pressure','Viscosity'], correct:1 },
+      { q:'What is the unit of electrical resistance?',                 options:['Volt','Ampere','Ohm','Watt'],                             correct:2 },
+      { q:'In a PID controller, what does "I" stand for?',             options:['Input','Integral','Inertia','Impedance'],                  correct:1 },
+      { q:'What does the Fourier transform convert?',                   options:['Space to time','Time to frequency','Voltage to current','Force to energy'], correct:1 },
+      { q:'Hooke\'s Law states stress is proportional to?',            options:['Strain','Temperature','Pressure','Velocity'],             correct:0 },
+      { q:'What is the first law of thermodynamics about?',            options:['Entropy','Conservation of energy','Heat transfer','Pressure'], correct:1 },
+      { q:'In digital electronics, what is a NAND gate?',              options:['NOT + AND','NOT + OR','AND + OR','XOR + NOT'],             correct:0 },
     ];
-    let vsScore = 0, vsAnswered = 0;
+    let vsScore = 0, vsAnswered = 0, vsQuestions = [];
 
     function openVisualSolver() {
       vsScore = 0; vsAnswered = 0;
+      vsQuestions = [...VS_ALL].sort(()=>Math.random()-0.5).slice(0, 5);
       renderVSQuestion(0);
     }
 
     function renderVSQuestion(qi) {
-      if (qi >= VS_QUESTIONS.length) {
-        const html = `<div style="text-align:center;padding:20px;">${gameResult(vsScore===VS_QUESTIONS.length, vsScore, VS_QUESTIONS.length, vsScore===VS_QUESTIONS.length?'Perfect visual analysis!':'Review the graphs and try again.')}</div>`;
+      if (qi >= vsQuestions.length) {
+        const html = `<div style="text-align:center;padding:20px;">${gameResult(vsScore===vsQuestions.length, vsScore, vsQuestions.length, vsScore===vsQuestions.length?'Perfect visual analysis!':'Review the concepts and try again.')}</div>`;
         showGameModal(html, '📊 Visual Solver — Results', 'visualSolver');
         return;
       }
-      const q = VS_QUESTIONS[qi];
+      const q = vsQuestions[qi];
       const html = `
-        <div style="color:#94a3b8;font-size:.8rem;margin-bottom:12px;">Question ${qi+1} of ${VS_QUESTIONS.length} · Score: ${vsScore}</div>
-        <div style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);border-radius:10px;padding:16px;margin-bottom:16px;">
-          <p style="color:#e2e8f0;font-size:.95rem;font-weight:500;">${q.q}</p>
+        <div style="color:#64748b;font-size:.8rem;margin-bottom:12px;display:flex;justify-content:space-between;">
+          <span>Question ${qi+1} of ${vsQuestions.length}</span>
+          <span style="color:#34d399;font-weight:600;">Score: ${vsScore} ⭐</span>
+        </div>
+        <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:12px;padding:16px;margin-bottom:16px;">
+          <p style="color:#e2e8f0;font-size:.95rem;font-weight:600;line-height:1.5;">🤔 ${q.q}</p>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;">
           ${q.options.map((opt,oi)=>`
-            <button onclick="vsAnswer(${qi},${oi})" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#e2e8f0;padding:12px 16px;border-radius:8px;cursor:pointer;text-align:left;font-size:.9rem;transition:all .15s;" onmouseover="this.style.background='rgba(167,139,250,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'">
-              <span style="color:#64748b;margin-right:8px;">${String.fromCharCode(65+oi)}.</span>${opt}
+            <button onclick="vsAnswer(${qi},${oi})" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#e2e8f0;padding:12px 16px;border-radius:10px;cursor:pointer;text-align:left;font-size:.9rem;transition:all .15s;display:flex;align-items:center;gap:10px;" onmouseover="this.style.background='rgba(16,185,129,0.12)';this.style.borderColor='rgba(16,185,129,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(255,255,255,0.1)'">
+              <span style="background:rgba(255,255,255,0.1);border-radius:6px;padding:2px 8px;font-size:.8rem;font-weight:700;color:#94a3b8;">${String.fromCharCode(65+oi)}</span>${opt}
             </button>`).join('')}
         </div>`;
       showGameModal(html, '📊 Visual Solver — Graph Analysis', 'visualSolver');
     }
 
     function vsAnswer(qi, chosen) {
-      const q = VS_QUESTIONS[qi];
+      const q = vsQuestions[qi];
       const correct = chosen === q.correct;
       if (correct) vsScore++;
       const btns = document.querySelectorAll('.game-modal button[onclick^="vsAnswer"]');
