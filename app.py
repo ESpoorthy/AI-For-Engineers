@@ -2,7 +2,7 @@
 """
 AI for Engineers - Unified Application
 Single URL serves both UI and API.
-Answer engine: Built-in KB → Gemini AI → OpenAI → Wikipedia/Web search
+Answer engine: Built-in KB → Gemini AI (3 keys, rotating) → OpenAI → Fallback
 """
 
 from flask import Flask, request, jsonify
@@ -13,25 +13,40 @@ import re, os, requests, json as _json
 app = Flask(__name__)
 CORS(app)
 
+# ── API keys — loaded from environment only, never hardcoded ──────────────────
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyCIDSBL3eyg_MMQjD14Qfbgu32c05HFUFM")
 
-# ── Try Gemini client ──────────────────────────────────────────────────────────
+# All 3 Gemini keys — app rotates through them if one hits quota
+GEMINI_KEYS = [
+    k for k in [
+        os.environ.get("GEMINI_KEY_1", ""),
+        os.environ.get("GEMINI_KEY_2", ""),
+        os.environ.get("GEMINI_KEY_3", ""),
+    ] if k
+]
+
+GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash-lite"]
+
+# ── Build Gemini clients for each key ─────────────────────────────────────────
+gemini_clients = []
 try:
     from google import genai as google_genai
     from google.genai import errors as genai_errors
-    gemini_client = google_genai.Client(api_key=GEMINI_API_KEY)
-    FALLBACK_MODELS = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash-lite"]
-    print("✅ Gemini client initialised")
+    for key in GEMINI_KEYS:
+        try:
+            gemini_clients.append(google_genai.Client(api_key=key))
+        except Exception:
+            pass
+    print(f"✅ Gemini: {len(gemini_clients)} client(s) initialised")
 except Exception as e:
-    gemini_client = None
     print(f"⚠️  Gemini unavailable: {e}")
 
-# ── Try OpenAI client ──────────────────────────────────────────────────────────
+# ── OpenAI client ──────────────────────────────────────────────────────────────
 try:
     from openai import OpenAI
-    openai_client = OpenAI(api_key=OPENAI_API_KEY)
-    print("✅ OpenAI client initialised")
+    openai_client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
+    if openai_client:
+        print("✅ OpenAI client initialised")
 except Exception as e:
     openai_client = None
     print(f"⚠️  OpenAI unavailable: {e}")
@@ -548,21 +563,22 @@ Be thorough. Show ALL working. Explain WHY each step is taken."""
 
 
 def call_ai(question):
-    """Try Gemini → OpenAI → Wikipedia in order. Returns raw text or None."""
+    """Try all Gemini keys × models → OpenAI → fallback. Returns (text, source) or None."""
     prompt = MATH_PROMPT.format(question=question)
 
-    # 1. Try Gemini
-    if gemini_client:
-        for model_name in FALLBACK_MODELS:
+    # 1. Try each Gemini client × each model — rotate on quota errors
+    for client_idx, client in enumerate(gemini_clients):
+        for model_name in GEMINI_MODELS:
             try:
-                from google.genai import errors as genai_errors
-                response = gemini_client.models.generate_content(
+                response = client.models.generate_content(
                     model=model_name, contents=prompt)
-                print(f"✅ Answered via Gemini ({model_name})")
+                print(f"✅ Answered via Gemini key {client_idx+1} ({model_name})")
                 return response.text, "Google Gemini AI"
             except Exception as e:
-                if '429' in str(e) or 'quota' in str(e).lower():
-                    continue
+                err = str(e)
+                if any(x in err for x in ['429', 'quota', 'RESOURCE_EXHAUSTED', 'NOT_FOUND', 'deprecated']):
+                    continue   # try next model / next key
+                print(f"⚠️  Gemini key {client_idx+1} ({model_name}) error: {err[:80]}")
                 break
 
     # 2. Try OpenAI
@@ -724,7 +740,7 @@ def health():
     return jsonify({
         'status': 'healthy',
         'service': 'AI for Engineers',
-        'ai_enabled': gemini_client is not None,
+        'ai_enabled': len(gemini_clients) > 0,
         'message': 'Single-URL unified application'
     })
 
@@ -783,9 +799,10 @@ def solve():
 @app.route('/api/ai-status')
 def ai_status():
     return jsonify({
-        'ai_enabled': gemini_client is not None,
+        'ai_enabled': len(gemini_clients) > 0,
         'api_key_configured': True,
-        'models_available': FALLBACK_MODELS
+        'models_available': GEMINI_MODELS,
+        'keys_active': len(gemini_clients)
     })
 
 
@@ -823,7 +840,7 @@ if __name__ == '__main__':
     print("🚀  AI for Engineers — Unified Application")
     print("=" * 60)
     print(f"🌐  URL : http://localhost:8080")
-    print(f"🤖  AI  : {'✅ Gemini connected' if gemini_client else '❌ Not connected'}")
+    print(f"🤖  AI  : {'✅ ' + str(len(gemini_clients)) + ' Gemini key(s) active' if gemini_clients else '❌ Not connected'}")
     print("📖  Endpoints:")
     print("      POST /api/solve")
     print("      GET  /api/ai-status")
