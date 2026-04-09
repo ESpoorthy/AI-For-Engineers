@@ -335,10 +335,18 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
       padding: 40px 16px 32px;
       position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(167,139,250,0.4) transparent;
     }
+
+    .main-content::-webkit-scrollbar { width: 6px; }
+    .main-content::-webkit-scrollbar-track { background: transparent; }
+    .main-content::-webkit-scrollbar-thumb { background: rgba(167,139,250,0.4); border-radius: 3px; }
+    .main-content::-webkit-scrollbar-thumb:hover { background: rgba(167,139,250,0.7); }
 
     header { text-align: center; position: relative; z-index: 1; }
     header h1 {
@@ -365,6 +373,7 @@
       max-width: 700px;
       position: relative;
       z-index: 1;
+      margin-bottom: 40px;
     }
 
     .input-area {
