@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI for Engineers</title>
+  <!-- MathJax for proper math rendering -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+      options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -315,8 +323,30 @@
     .send-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
     .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
+    /* ── Enhanced Result Display ── */
     .result { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; }
-    .result h2 { font-size: 1.1rem; color: #a78bfa; margin-bottom: 12px; }
+    .result-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .result-header h2 { font-size: 1.1rem; color: #a78bfa; margin: 0; }
+    .source-badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; background: rgba(167,139,250,0.15); color: #a78bfa; border: 1px solid rgba(167,139,250,0.3); }
+    .confidence-badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; }
+    .confidence-high { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+    .confidence-medium { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+    .question-box { background: rgba(96,165,250,0.08); border-left: 3px solid #60a5fa; border-radius: 0 8px 8px 0; padding: 10px 14px; margin-bottom: 14px; color: #93c5fd; font-size: 14px; }
+    .solution-box { background: rgba(52,211,153,0.08); border-left: 3px solid #34d399; border-radius: 0 8px 8px 0; padding: 12px 14px; margin-bottom: 16px; color: #6ee7b7; font-size: 15px; line-height: 1.7; }
+    .steps-container { margin-bottom: 16px; }
+    .steps-toggle { display: flex; align-items: center; justify-content: space-between; background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2); border-radius: 10px; padding: 10px 14px; cursor: pointer; color: #a78bfa; font-size: 14px; font-weight: 600; transition: all 0.2s; user-select: none; }
+    .steps-toggle:hover { background: rgba(167,139,250,0.18); }
+    .steps-toggle .arrow { transition: transform 0.3s; font-size: 12px; }
+    .steps-toggle.open .arrow { transform: rotate(180deg); }
+    .steps-body { overflow: hidden; max-height: 0; transition: max-height 0.4s ease; }
+    .steps-body.open { max-height: 2000px; }
+    .step-item { display: flex; gap: 12px; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); align-items: flex-start; }
+    .step-item:last-child { border-bottom: none; }
+    .step-num { min-width: 26px; height: 26px; background: linear-gradient(135deg, #7c3aed, #2563eb); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; margin-top: 1px; }
+    .step-text { color: #cbd5e1; font-size: 14px; line-height: 1.7; }
+    .concepts-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .concept-pill { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: rgba(96,165,250,0.1); color: #93c5fd; border: 1px solid rgba(96,165,250,0.25); }
+    .verification-box { background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.2); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #fbbf24; display: flex; gap: 8px; align-items: flex-start; }
     .error { color: #f87171; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); border-radius: 8px; padding: 12px; }
     .answer { color: #cbd5e1; line-height: 1.8; }
     .steps { margin-top: 14px; }
@@ -1380,21 +1410,68 @@
         
         if (data.error || !data.success) {
           const errorMsg = data.error || 'Unknown error';
-          result.innerHTML = `<h2>Result</h2><div class="error">${errorMsg}</div>`;
+          result.innerHTML = `<div class="error">❌ ${errorMsg}</div>`;
           answerText = `Error: ${errorMsg}`;
         } else {
+          // ── Build step items with numbered circles ──
           let stepsHtml = '';
-          if (data.steps && data.steps.length > 0)
-            stepsHtml = `<div class="steps"><strong style="color:#a78bfa">Steps:</strong><ul>${data.steps.map(s => `<li>${s}</li>`).join('')}</ul></div>`;
-          
+          if (data.steps && data.steps.length > 0) {
+            const stepItems = data.steps.map((s, i) => {
+              // Strip "Step N:" prefix since we show the number visually
+              const text = s.replace(/^Step\s*\d+[:\-\.]?\s*/i, '');
+              return `<div class="step-item">
+                <div class="step-num">${i+1}</div>
+                <div class="step-text">${text}</div>
+              </div>`;
+            }).join('');
+            stepsHtml = `
+              <div class="steps-container">
+                <div class="steps-toggle open" onclick="toggleSteps(this)">
+                  <span>📋 Step-by-Step Solution (${data.steps.length} steps)</span>
+                  <span class="arrow">▼</span>
+                </div>
+                <div class="steps-body open">${stepItems}</div>
+              </div>`;
+          }
+
+          // ── Concepts pills ──
+          let conceptsHtml = '';
+          if (data.mathematical_concepts && data.mathematical_concepts.length > 0) {
+            const pills = data.mathematical_concepts.map(c =>
+              `<span class="concept-pill">📌 ${c}</span>`).join('');
+            conceptsHtml = `<div class="concepts-row">${pills}</div>`;
+          }
+
+          // ── Verification box ──
+          let verifyHtml = '';
+          if (data.verification) {
+            verifyHtml = `<div class="verification-box">✅ <span>${data.verification}</span></div>`;
+          }
+
+          // ── Source & confidence badges ──
+          const conf = data.confidence || 'high';
+          const confClass = conf === 'high' ? 'confidence-high' : 'confidence-medium';
+          const confIcon = conf === 'high' ? '🟢' : '🟡';
+
           const solutionHtml = `
-            <h2>Solution</h2>
-            <div class="answer"><strong style="color:#60a5fa">Q:</strong> ${data.question}</div>
-            <div class="answer" style="margin-top:10px"><strong style="color:#34d399">A:</strong> ${data.solution}</div>
-            ${stepsHtml}`;
-          
+            <div class="result-header">
+              <h2>📝 Solution</h2>
+              <span class="source-badge">🔗 ${data.source || 'Built-in'}</span>
+              <span class="confidence-badge ${confClass}">${confIcon} ${conf}</span>
+            </div>
+            <div class="question-box">❓ ${data.question}</div>
+            <div class="solution-box">💡 ${data.solution}</div>
+            ${stepsHtml}
+            ${conceptsHtml}
+            ${verifyHtml}`;
+
           result.innerHTML = solutionHtml;
-          answerText = data.solution || data.explanation || 'Solution provided';
+          answerText = data.solution || 'Solution provided';
+
+          // Trigger MathJax to re-render math in the new content
+          if (window.MathJax) {
+            MathJax.typesetPromise([result]).catch(err => console.log(err));
+          }
         }
         
         // Save to chat history
@@ -1417,6 +1494,12 @@
     document.getElementById('question').addEventListener('keydown', e => {
       if (e.key === 'Enter' && e.ctrlKey) solve();
     });
+
+    // Toggle collapsible steps
+    function toggleSteps(btn) {
+      btn.classList.toggle('open');
+      btn.nextElementSibling.classList.toggle('open');
+    }
 
     // ── VOICE ──
     let recognition = null, isListening = false;
