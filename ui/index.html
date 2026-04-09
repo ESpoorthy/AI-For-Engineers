@@ -335,20 +335,51 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding: 40px 16px 32px;
-      position: relative;
       height: 100vh;
-      overflow-y: auto;
-      overflow-x: hidden;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(167,139,250,0.5) rgba(255,255,255,0.05);
+      overflow: hidden;
+      position: relative;
     }
 
     .main-content::-webkit-scrollbar { width: 8px; }
     .main-content::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 4px; }
     .main-content::-webkit-scrollbar-thumb { background: rgba(167,139,250,0.5); border-radius: 4px; }
     .main-content::-webkit-scrollbar-thumb:hover { background: rgba(167,139,250,0.8); }
+
+    /* Scrollable results area in the middle */
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 32px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(167,139,250,0.5) rgba(255,255,255,0.05);
+    }
+    .chat-area::-webkit-scrollbar { width: 8px; }
+    .chat-area::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 4px; }
+    .chat-area::-webkit-scrollbar-thumb { background: rgba(167,139,250,0.5); border-radius: 4px; }
+
+    /* Pinned bottom input area */
+    .input-dock {
+      flex-shrink: 0;
+      padding: 12px 16px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: linear-gradient(to top, #0d0d0d 80%, transparent);
+      position: relative;
+      z-index: 5;
+    }
+
+    .footer-text {
+      text-align: center;
+      padding: 8px 0 14px;
+      font-size: 12px;
+      color: #475569;
+      letter-spacing: 0.3px;
+    }
 
     header { text-align: center; position: relative; z-index: 1; }
     header h1 {
@@ -574,38 +605,47 @@
 
   <!-- Main Content -->
   <div class="main-content">
-    <header>
-      <h1>AI for Engineers</h1>
-      <p>Your intelligent learning assistant</p>
-    </header>
 
-    <div class="card">
-      <div class="input-area">
-        <textarea id="question" placeholder="Ask your engineering question..."></textarea>
-        <div class="toolbar">
-          <button class="icon-btn" id="voiceBtn" title="Voice input" onclick="toggleVoice()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="2" width="6" height="12" rx="3"/>
-              <path d="M5 10a7 7 0 0 0 14 0"/>
-              <line x1="12" y1="19" x2="12" y2="22"/>
-              <line x1="8" y1="22" x2="16" y2="22"/>
-            </svg>
-          </button>
-          <button class="icon-btn" id="cameraBtn" title="Camera input" onclick="openCamera()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-              <circle cx="12" cy="13" r="4"/>
-            </svg>
-          </button>
-          <button class="send-btn" id="btn" onclick="solve()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            Send
-          </button>
+    <!-- Scrollable area: header + results -->
+    <div class="chat-area" id="chatArea">
+      <header>
+        <h1>AI for Engineers</h1>
+        <p>Your intelligent learning assistant</p>
+      </header>
+      <div class="status" id="status"></div>
+      <div class="result" id="result" style="display:none; width:100%; max-width:700px;"></div>
+    </div>
+
+    <!-- Pinned bottom: input box + footer -->
+    <div class="input-dock">
+      <div class="card">
+        <div class="input-area">
+          <textarea id="question" placeholder="Ask your engineering question..."></textarea>
+          <div class="toolbar">
+            <button class="icon-btn" id="voiceBtn" title="Voice input" onclick="toggleVoice()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="2" width="6" height="12" rx="3"/>
+                <path d="M5 10a7 7 0 0 0 14 0"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+                <line x1="8" y1="22" x2="16" y2="22"/>
+              </svg>
+            </button>
+            <button class="icon-btn" id="cameraBtn" title="Camera input" onclick="openCamera()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </button>
+            <button class="send-btn" id="btn" onclick="solve()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Send
+            </button>
+          </div>
         </div>
       </div>
-      <div class="status" id="status"></div>
-      <div class="result" id="result" style="display:none"></div>
+      <div class="footer-text">Built with ❤️ for Engineers</div>
     </div>
+
   </div>
 
   <!-- Camera Modal -->
@@ -1788,6 +1828,10 @@
           if (window.MathJax) {
             MathJax.typesetPromise([result]).catch(err => console.log(err));
           }
+
+          // Scroll chat area to show the result
+          const chatArea = document.getElementById('chatArea');
+          if (chatArea) setTimeout(() => chatArea.scrollTop = chatArea.scrollHeight, 100);
         }
         
         // Save to chat history
